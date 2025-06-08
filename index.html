@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Detallada de Ingeniería de Requisitos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        /* Paleta de colores 2025: Índigo y Cian */
+        .accent-bg { background-color: #4f46e5; } /* indigo-600 */
+        .accent-text { color: #4f46e5; }
+        .secondary-accent-bg { background-color: #06b6d4; } /* cyan-500 */
+        .secondary-accent-text { color: #06b6d4; }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            color: #475569; /* slate-600 */
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            transform: translateX(4px);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #4f46e5; /* indigo-600 */
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        /* Estilos para el banner animado */
+        #banner-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+        #banner-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #banner-container .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 1rem;
+        }
+        .glow-text {
+             text-shadow:
+                0 0 7px rgba(255,255,255,0.4),
+                0 0 10px rgba(138, 43, 226, 0.6), /* Violeta */
+                0 0 21px rgba(0, 191, 255, 0.6), /* Azul profundo */
+                0 0 42px rgba(255, 105, 180, 0.6); /* Rosa */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-btn" class="md:hidden fixed top-4 right-4 z-50 p-2 bg-slate-800 text-white rounded-md shadow-lg">
+        <svg id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+    
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-64 fixed inset-y-0 left-0 bg-slate-100 p-4 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 border-r border-slate-200">
+        <h2 class="text-xl font-bold accent-text mb-6 mt-12 md:mt-4">Menú de Contenidos</h2>
+        <nav id="nav-menu" class="space-y-1">
+            <a href="#inicio" class="nav-link block p-2 rounded-lg font-semibold">Inicio</a>
+            <a href="#solucion" class="nav-link block p-2 rounded-lg font-semibold">Ingeniería de Requisitos</a>
+            <a href="#roles" class="nav-link block p-2 rounded-lg font-semibold">Roles Clave</a>
+            <a href="#tipos" class="nav-link block p-2 rounded-lg font-semibold">Tipos de Requisitos</a>
+            <a href="#tecnicas" class="nav-link block p-2 rounded-lg font-semibold">Técnicas de Recolección</a>
+            <a href="#metodologias" class="nav-link block p-2 rounded-lg font-semibold">Metodologías</a>
+            <a href="#uml" class="nav-link block p-2 rounded-lg font-semibold">Modelado con UML</a>
+            <a href="#prototipos" class="nav-link block p-2 rounded-lg font-semibold">Prototipos</a>
+            <a href="#gestion" class="nav-link block p-2 rounded-lg font-semibold">Gestión y Control</a>
+            <a href="#actividad" class="nav-link block p-2 rounded-lg font-semibold">¡Ahora tú!</a>
+            <a href="#conclusion" class="nav-link block p-2 rounded-lg font-semibold">Conclusión</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 md:ml-64">
+        
+        <section id="inicio">
+            <div id="banner-container">
+                <div class="content">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black glow-text animate-pulse">
+                        ESTABLECIMIENTO
+                    </h1>
+                    <p class="text-lg md:text-2xl mt-4 font-light text-gray-300">
+                        REQUISITOS DE LA SOLUCIÓN DE SOFTWARE
+                    </p>
+                    <p class="text-sm font-light text-gray-400 opacity-75 mt-16">
+                        Ingeniero Antonio Rodriguez
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="p-6 md:p-12">
+            <section id="solucion" class="py-20">
+                <h2 class="text-3xl font-bold mb-8 section-title">¿Qué es la Ingeniería de Requisitos?</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-2xl font-bold secondary-accent-text mb-4">El Plano Maestro del Software</h3>
+                        <p class="text-slate-700 leading-relaxed">La **Ingeniería de Requisitos (IR)** es el proceso sistemático de **descubrir, analizar, documentar y mantener** los requisitos para un sistema de software. Su objetivo principal es simple pero crítico: asegurar que el equipo construya un producto que **resuelva el problema correcto para las personas correctas**.</p>
+                        <p class="mt-4 text-slate-700 leading-relaxed">Piénsalo como la fase de arquitectura y diseño de una casa. Antes de poner un solo ladrillo, el arquitecto habla con la familia (los stakeholders), entiende sus necesidades (¿quieren piscina?, ¿cuántos cuartos?), crea los planos (los documentos de requisitos) y se asegura de que todos estén de acuerdo. Un error en los planos es mucho más fácil y barato de arreglar que derribar una pared ya construida.</p>
+                    </div>
+                     <div class="bg-red-100 border-l-4 border-red-500 p-8 rounded-r-lg">
+                        <h3 class="text-2xl font-bold text-red-800 mb-4">El Costo de un Mal Requisito</h3>
+                        <p class="text-red-700 mb-4">Un estudio clásico de IBM demostró que un error de requisitos que cuesta 1€ arreglar en la fase de análisis, puede costar **100€ o más** si se descubre después de que el producto ha sido lanzado. ¡La IR no es un gasto, es la mejor inversión en un proyecto!</p>
+                        <img src="https://placehold.co/500x300/fecaca/991b1b?text=Costo+del+Error+a+lo+largo+del+tiempo" alt="[Gráfica mostrando el aumento exponencial del costo de arreglar errores]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                </div>
+            </section>
+            
+            <section id="roles" class="py-20 bg-slate-50 rounded-2xl">
+                 <h2 class="text-3xl font-bold mb-8 section-title">Roles Clave en el Proceso</h2>
+                 <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">La obtención de requisitos es un trabajo en equipo. Diferentes roles colaboran para crear una visión compartida del producto.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <div class="text-5xl mb-4">👑</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Cliente / Product Owner</h3>
+                        <p class="text-sm text-slate-600">Representa a los stakeholders y al negocio. Define la visión del producto, prioriza las funcionalidades (el "qué") y es el responsable final del éxito del proyecto.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <div class="text-5xl mb-4">🕵️‍♂️</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Analista de Requisitos / Negocio</h3>
+                        <p class="text-sm text-slate-600">Es el puente entre el cliente y el equipo técnico. Se especializa en aplicar las técnicas de recolección para entender las necesidades y traducirlas a requisitos claros y sin ambigüedades.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <div class="text-5xl mb-4">👩‍💻</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Equipo de Desarrollo</h3>
+                        <p class="text-sm text-slate-600">Son los constructores (programadores, testers, diseñadores). Analizan la viabilidad técnica de los requisitos, estiman el esfuerzo y hacen preguntas clave para aclarar los detalles de implementación (el "cómo").</p>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="tipos" class="py-20">
+                <h2 class="text-3xl font-bold mb-8 section-title">Funcionales vs. No Funcionales: Una Mirada Profunda</h2>
+                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">Entender esta distinción es fundamental. Un sistema puede hacer todo lo que se le pide (funcionales), pero si es lento, inseguro e imposible de usar, es un fracaso.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="accent-bg text-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Requisitos Funcionales (El "QUÉ")</h3>
+                        <p class="mb-4">Describen un comportamiento o servicio específico que el sistema debe proveer. Son las funcionalidades que el usuario ve y con las que interactúa directamente. Se suelen expresar como acciones.</p>
+                        <p class="font-semibold mt-4">Ejemplo: App de E-commerce</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>El sistema **debe permitir** a los usuarios buscar productos por nombre o categoría.</li>
+                            <li>El sistema **debe calcular** el costo total del carrito, incluyendo impuestos y envío.</li>
+                            <li>El sistema **debe enviar** un correo de confirmación al usuario tras una compra exitosa.</li>
+                        </ul>
+                    </div>
+                    <div class="secondary-accent-bg text-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Requisitos No Funcionales (El "CÓMO DE BIEN")</h3>
+                        <p class="mb-4">Definen las cualidades del sistema y establecen restricciones sobre cómo se logran los requisitos funcionales. Son los criterios de calidad que hacen que un sistema sea usable y robusto.</p>
+                        <p class="font-semibold mt-4">Categorías y Ejemplos:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-2">
+                            <li><strong>Rendimiento:</strong> La página de resultados de búsqueda debe cargar en menos de 1.5 segundos.</li>
+                            <li><strong>Seguridad:</strong> Todas las transacciones de pago deben usar cifrado TLS 1.3.</li>
+                            <li><strong>Usabilidad:</strong> Un nuevo usuario debe poder completar una compra en menos de 5 pasos sin necesidad de ayuda.</li>
+                            <li><strong>Fiabilidad:</strong> El sistema debe tener una disponibilidad del 99.9% (uptime).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tecnicas" class="py-20 bg-slate-50 rounded-2xl">
+                <h2 class="text-3xl font-bold mb-8 section-title">El Arsenal del Analista: Técnicas de Recolección</h2>
+                <div id="accordion-tecnicas" class="space-y-4 max-w-4xl mx-auto">
+                     <div class="accordion-item bg-white rounded-lg shadow-md border border-slate-200">
+                        <button class="accordion-header w-full text-left p-4 font-semibold text-lg flex justify-between items-center accent-text">
+                            Historias de Usuario y Casos de Uso
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 border-t border-slate-200">
+                            <p class="mb-2">Son dos formas populares de capturar requisitos funcionales.</p>
+                            <p class="font-bold">Historias de Usuario (Ágil):</p>
+                            <p class="p-3 bg-slate-100 rounded-md font-mono text-sm mt-2">"Como <span class="font-bold">cliente registrado</span>, quiero <span class="font-bold">guardar mi dirección de envío</span> para <span class="font-bold">no tener que escribirla en cada compra</span>."</p>
+                            <p class="mt-2">Son intencionalmente breves para forzar la <span class="font-bold">conversación</span> y aclarar los detalles después.</p>
+                            <p class="font-bold mt-4">Casos de Uso (Tradicional):</p>
+                            <p class="mt-2">Son más detallados. Describen paso a paso la interacción entre un actor (usuario) y el sistema para lograr un objetivo. Incluyen el flujo normal, flujos alternativos y condiciones de error. Son más formales y exhaustivos.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow-md border border-slate-200">
+                        <button class="accordion-header w-full text-left p-4 font-semibold text-lg flex justify-between items-center accent-text">
+                            Entrevistas y Workshops
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 border-t border-slate-200">
+                             <p class="font-bold">Entrevistas:</p>
+                             <p>Conversaciones uno a uno con stakeholders para obtener información detallada. Pueden ser <span class="font-bold">estructuradas</span> (preguntas fijas) o <span class="font-bold">abiertas</span> (exploratorias). Son excelentes para entender perspectivas individuales en profundidad.</p>
+                             <p class="font-bold mt-4">Workshops (Talleres de Requisitos):</p>
+                             <p>Reuniones intensivas y colaborativas que juntan a clientes, usuarios y desarrolladores. Son muy eficientes para resolver conflictos, tomar decisiones rápidas y generar un entendimiento compartido en poco tiempo.</p>
+                        </div>
+                    </div>
+                     <div class="accordion-item bg-white rounded-lg shadow-md border border-slate-200">
+                        <button class="accordion-header w-full text-left p-4 font-semibold text-lg flex justify-between items-center accent-text">
+                            Observación y Prototipado
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content p-4 border-t border-slate-200">
+                             <p class="font-bold">Observación:</p>
+                             <p>A veces, lo que la gente <span class="font-bold">dice</span> que hace es diferente a lo que <span class="font-bold">realmente</span> hace. Observar a los usuarios en su entorno de trabajo real (etnografía) revela necesidades implícitas y problemas que ellos mismos no sabían que tenían.</p>
+                             <p class="font-bold mt-4">Prototipado:</p>
+                             <p>Crear un modelo tangible de la aplicación (desde un dibujo en papel hasta una maqueta interactiva). Es una técnica en sí misma para obtener feedback. Al "jugar" con el prototipo, los usuarios descubren nuevos requisitos y validan las ideas iniciales.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="metodologias" class="py-20">
+                <h2 class="text-3xl font-bold mb-8 section-title">Metodologías: ¿Planificarlo todo o Adaptarse al Vuelo?</h2>
+                <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <!-- Traditional Column -->
+                    <div class="border-2 border-slate-300 p-8 rounded-xl">
+                        <h3 class="text-2xl font-bold text-slate-700 mb-4 flex items-center"><span class="text-3xl mr-3">🗺️</span> Enfoque Tradicional (Cascada)</h3>
+                        <p class="mb-4">Funciona como una cascada: cada fase debe completarse antes de que comience la siguiente. Es un enfoque predictivo, ideal para proyectos con requisitos muy estables y poco riesgo de cambio.</p>
+                        <p class="font-semibold mb-2">Ideal para:</p>
+                        <ul class="list-disc list-inside space-y-1 mb-4">
+                            <li>Sistemas de alta criticidad (aviónica, médicos).</li>
+                            <li>Proyectos donde los requisitos no cambiarán.</li>
+                            <li>Proyectos con contratos de precio fijo.</li>
+                        </ul>
+                         <img src="https://placehold.co/500x200/e2e8f0/334155?text=Requisitos+%E2%86%92+Dise%C3%B1o+%E2%86%92+C%C3%B3digo+%E2%86%92+Pruebas" alt="[Diagrama secuencial del modelo en cascada]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+
+                    <!-- Agile Column -->
+                    <div class="border-2 border-indigo-500 p-8 rounded-xl bg-indigo-50">
+                        <h3 class="text-2xl font-bold accent-text mb-4 flex items-center"><span class="text-3xl mr-3">🔄</span> Enfoque Ágil (Scrum, Kanban)</h3>
+                        <p class="mb-4">Funciona en ciclos cortos e iterativos (Sprints). Es un enfoque adaptativo que valora la flexibilidad y la entrega continua de valor. El cambio no es un enemigo, es una realidad.</p>
+                         <p class="font-semibold mb-2">Ideal para:</p>
+                        <ul class="list-disc list-inside space-y-1 mb-4">
+                            <li>Proyectos con alta incertidumbre.</li>
+                            <li>Desarrollo de nuevos productos (startups).</li>
+                            <li>Entornos donde el feedback del cliente es vital.</li>
+                        </ul>
+                         <img src="https://placehold.co/500x200/e0e7ff/3730a3?text=Idea+%E2%86%92+%5BConstruir%E2%86%92Medir%E2%86%92Aprender%5D%E2%86%BA" alt="[Diagrama cíclico del enfoque ágil]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                </div>
+            </section>
+            
+            <section id="uml" class="py-20 bg-slate-50 rounded-2xl">
+                <h2 class="text-3xl font-bold mb-8 section-title">Modelado Visual con UML</h2>
+                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">El **Lenguaje Unificado de Modelado (UML)** es el estándar de la industria para crear "planos" visuales del software. Un diagrama vale más que mil palabras, y UML ayuda a todo el equipo a entender la estructura y el comportamiento del sistema.</p>
+                <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Diagrama de Casos de Uso</h3>
+                        <p class="text-sm text-slate-600 mb-4">Muestra las interacciones entre los actores (usuarios) y el sistema. Responde a la pregunta: **¿Qué puede hacer el usuario con el sistema?**</p>
+                        <img src="https://placehold.co/400x300/ccfbf1/0f766e?text=%F0%9F%91%A4+%E2%86%92+%5BComprar+Producto%5D" alt="[Esquema de un Diagrama de Casos de Uso]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Diagrama de Clases</h3>
+                        <p class="text-sm text-slate-600 mb-4">Describe la estructura estática del sistema: sus clases, atributos, métodos y las relaciones entre ellos. Responde a: **¿De qué partes está hecho el sistema?**</p>
+                         <img src="https://placehold.co/400x300/ccfbf1/0f766e?text=%5BCarrito%5D%E2%86%94%5BProducto%5D" alt="[Esquema de un Diagrama de Clases]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-slate-200">
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Diagrama de Secuencia</h3>
+                        <p class="text-sm text-slate-600 mb-4">Muestra cómo los objetos colaboran en un escenario particular a lo largo del tiempo. Responde a: **¿Cómo se comunican las partes para lograr algo?**</p>
+                         <img src="https://placehold.co/400x300/ccfbf1/0f766e?text=Usuario%E2%86%92API%E2%86%92BD" alt="[Esquema de un Diagrama de Secuencia]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                </div>
+            </section>
+
+            <section id="prototipos" class="py-20">
+                 <h2 class="text-3xl font-bold mb-8 section-title">¡Ver para Creer! El Poder de los Prototipos</h2>
+                 <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">Un prototipo es un modelo preliminar del software. Su objetivo es validar ideas y obtener feedback antes de escribir una sola línea de código de producción.</p>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border">
+                        <div class="text-5xl mb-4">✏️</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Baja Fidelidad (Lo-Fi)</h3>
+                        <p>Bocetos en papel o wireframes simples. Rápidos y baratos de crear, perfectos para explorar la estructura y el flujo general en las fases iniciales.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg card-hover border">
+                        <div class="text-5xl mb-4">🎨</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">Alta Fidelidad (Hi-Fi)</h3>
+                        <p>Maquetas interactivas (mockups) que se ven y se sienten como el producto final. Excelentes para probar la usabilidad y presentar la idea a los inversores.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg card-hover border">
+                        <div class="text-5xl mb-4">💡</div>
+                        <h3 class="text-xl font-bold secondary-accent-text mb-2">El Objetivo: Aprender</h3>
+                        <p>No importa la fidelidad, el objetivo es siempre el mismo: aprender rápido y barato. Un prototipo que demuestra que una idea no funciona es un éxito, ¡ha ahorrado meses de trabajo!</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="gestion" class="py-20 bg-slate-50 rounded-2xl">
+                <h2 class="text-3xl font-bold mb-8 section-title">Gestión de Requisitos: Trazabilidad y Control de Versiones</h2>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Trazabilidad -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg border">
+                        <h3 class="text-2xl font-bold secondary-accent-text mb-4">Trazabilidad: Siguiendo la Pista</h3>
+                        <p class="text-slate-700 mb-4">La trazabilidad es la capacidad de seguir la vida de un requisito hacia adelante y hacia atrás, conectándolo con su origen, su implementación en el código y las pruebas que lo verifican.</p>
+                        <p class="font-semibold text-slate-800">Ejemplo de una traza:</p>
+                        <div class="mt-2 p-4 bg-slate-100 rounded-md text-sm leading-relaxed">
+                            <p><span class="font-bold">Origen:</span> Minuta de reunión con el cliente.</p>
+                            <p>⬇️</p>
+                            <p><span class="font-bold">Requisito (RF-12):</span> "El sistema debe permitir exportar el reporte a PDF."</p>
+                             <p>⬇️</p>
+                            <p><span class="font-bold">Código:</span> Clase `PdfExportService.java`.</p>
+                             <p>⬇️</p>
+                            <p><span class="font-bold">Caso de Prueba (CP-34):</span> "Verificar que el PDF generado es correcto."</p>
+                        </div>
+                        <p class="mt-4 text-slate-600 text-sm">Esto es vital para analizar el impacto de un cambio: "Si cambiamos este requisito, ¿qué partes del código y qué pruebas se ven afectadas?"</p>
+                    </div>
+                    <!-- Control de Versiones -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg border">
+                        <h3 class="text-2xl font-bold secondary-accent-text mb-4">Control de Versiones: El "Viaje en el Tiempo" del Código</h3>
+                        <p class="text-slate-700 mb-4">Un sistema de control de versiones como **Git** es como una máquina del tiempo para tu código. Permite a múltiples desarrolladores trabajar en el mismo proyecto sin pisarse el trabajo y guarda un historial completo de cada cambio.</p>
+                        <p class="font-semibold text-slate-800">Conceptos básicos de Git:</p>
+                        <ul class="list-disc list-inside space-y-2 mt-2 text-slate-700">
+                           <li><strong>Commit:</strong> Una "foto" o punto de guardado de tu código en un momento dado.</li>
+                           <li><strong>Branch (Rama):</strong> Una línea de desarrollo independiente. Se crean ramas para trabajar en nuevas funcionalidades sin afectar la versión principal estable (rama `main`).</li>
+                           <li><strong>Merge (Fusionar):</strong> El acto de incorporar los cambios de una rama en otra.</li>
+                        </ul>
+                         <img src="https://placehold.co/500x250/e2e8f0/334155?text=main+%E2%86%92+branch+%E2%86%92+commit+%E2%86%92+merge" alt="[Diagrama del flujo de trabajo de Git con ramas y fusiones]" class="mt-4 rounded-lg shadow-md w-full">
+                    </div>
+                </div>
+            </section>
+
+            <section id="actividad" class="py-20">
+                <h2 class="text-3xl font-bold mb-8 section-title">¡Ahora te toca a ti! Diseña una App</h2>
+                <div class="bg-white p-8 rounded-xl shadow-2xl max-w-3xl mx-auto border-2 border-indigo-400">
+                    <p class="mb-6 text-slate-700">Imagina que vas a crear una app para gestionar tareas en equipo. Usa el formato de Historia de Usuario para describir 3 funciones clave que necesitaría.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="user-type" class="block font-semibold mb-1">1. Como un <span class="accent-text">manager</span>, quiero...</label>
+                            <input type="text" id="user-story-1" placeholder="Ej: asignar tareas a miembros del equipo..." class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-400">
+                        </div>
+                        <div>
+                            <label for="user-want" class="block font-semibold mb-1">2. Como un <span class="accent-text">desarrollador</span>, quiero...</label>
+                            <input type="text" id="user-story-2" placeholder="Ej: marcar una tarea como 'completada'..." class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-400">
+                        </div>
+                        <div>
+                            <label for="user-benefit" class="block font-semibold mb-1">3. Como un <span class="accent-text">tester</span>, quiero...</label>
+                            <input type="text" id="user-story-3" placeholder="Ej: reportar un bug en una tarea específica..." class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-400">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="conclusion" class="py-20 text-center bg-slate-800 text-white rounded-2xl mt-20">
+                <h2 class="text-3xl font-bold mb-4">Más Allá del Código: Una Habilidad para la Vida</h2>
+                <p class="max-w-3xl mx-auto mb-8">La ingeniería de requisitos te enseña a pensar de forma estructurada, a comunicarte con claridad y a resolver el problema correcto. Es la base no solo del buen software, sino de cualquier proyecto exitoso.</p>
+                <p class="font-semibold text-xl">¡Ahora tienes los planos para empezar a construir!</p>
+            </section>
+        </main>
+    </div>
+
+<script>
+    // --- Script para el banner animado ---
+    (function() {
+        let scene, camera, renderer, particleSystem;
+        let particleCount;
+        let particleSize;
+        const colors = [0xff69b4, 0x8a2be2, 0x00bfff, 0x7fffd4]; 
+
+        function setResponsiveSettings() {
+            const width = window.innerWidth;
+            if (width < 768) {
+                particleCount = 1500;
+                particleSize = 1.2;
+            } else if (width < 1024) {
+                particleCount = 3000;
+                particleSize = 1.5;
+            } else {
+                particleCount = 5000;
+                particleSize = 1.8;
+            }
+        }
+
+        function init() {
+            const bannerContainer = document.getElementById('banner-container');
+            if (!bannerContainer) return;
+
+            setResponsiveSettings(); 
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, bannerContainer.offsetWidth / bannerContainer.offsetHeight, 0.1, 1000);
+            camera.position.z = 400;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(bannerContainer.offsetWidth, bannerContainer.offsetHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            bannerContainer.insertBefore(renderer.domElement, bannerContainer.firstChild);
+
+            const particleGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const particleColors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 1000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 1000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 1000;
+
+                const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)]);
+                particleColors[i3] = color.r;
+                particleColors[i3 + 1] = color.g;
+                particleColors[i3 + 2] = color.b;
+            }
+
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: particleSize,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                depthWrite: false,
+            });
+
+            particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particleSystem);
+
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+            animate();
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) / 10;
+            mouseY = (event.clientY - window.innerHeight / 2) / 10;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.0001;
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            particleSystem.rotation.y = time * 0.2;
+            particleSystem.rotation.x = time * 0.1;
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            const bannerContainer = document.getElementById('banner-container');
+            if (bannerContainer) {
+                camera.aspect = bannerContainer.offsetWidth / bannerContainer.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(bannerContainer.offsetWidth, bannerContainer.offsetHeight);
+            }
+        }
+        
+        // Esperar a que todo el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+
+
+    // --- Script para la UI principal (menú, acordeón, etc.) ---
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const openIcon = document.getElementById('menu-open-icon');
+        const closeIcon = document.getElementById('menu-close-icon');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+        if (menuBtn) {
+           menuBtn.addEventListener('click', toggleMenu);
+        }
+
+        const navLinksMobile = document.querySelectorAll('#nav-menu a');
+        navLinksMobile.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) { 
+                    toggleMenu();
+                }
+            });
+        });
+
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const arrow = header.querySelector('span');
+                const parentAccordion = header.closest('[id^="accordion"]');
+
+                if (parentAccordion) {
+                    parentAccordion.querySelectorAll('.accordion-content').forEach(c => {
+                        if (c !== content && c.style.maxHeight) {
+                            c.style.maxHeight = null;
+                            const prevArrow = c.previousElementSibling.querySelector('span');
+                            if(prevArrow) prevArrow.classList.remove('rotate-180');
+                        }
+                    });
+                }
+
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    if(arrow) arrow.classList.remove('rotate-180');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    if(arrow) arrow.classList.add('rotate-180');
+                }
+            });
+        });
+
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('#nav-menu a');
+
+        const observer = new IntersectionObserver((entries) => {
+            let activeSectionId = '';
+            const visibleSections = entries.filter(e => e.isIntersecting);
+
+            if (visibleSections.length > 0) {
+                visibleSections.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+                activeSectionId = visibleSections[0].target.id;
+            }
+
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href').substring(1) === activeSectionId);
+            });
+           
+        }, { rootMargin: '-40% 0px -60% 0px', threshold: 0 });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+</script>
+
+</body>
+</html>
